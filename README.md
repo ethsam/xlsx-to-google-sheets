@@ -387,16 +387,6 @@ Script développé par **Viceversa** - Solutions Digitales sur-mesure
 
 ---
 
-## 🎓 Projets & Références
-
-- **entrepreneur.re** — Média automatisé IA
-- **actus.re** — Agrégateur d'actualités automatisé
-- **lequotidien.re** — Le Quotidien de La Réunion
-- **promotions.re** — Catalogues promotionnels entreprises
-- **salonformation.re** — Gestion salon formation
-
----
-
 **Développé avec ❤️ à La Réunion (974)**
 
 **Version:** 1.0 | **Mars 2026** | **Python 3.x**
