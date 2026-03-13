@@ -2,6 +2,8 @@
 
 Script Python professionnel pour convertir automatiquement tous les fichiers Excel/CSV d'un dossier Google Drive en Google Sheets, avec exploration récursive des sous-dossiers.
 
+**2 versions disponibles :** Service Account (automation) ou OAuth (usage personnel)
+
 ---
 
 ## 👨‍💻 Auteur
@@ -24,12 +26,53 @@ Solutions Digitales sur-mesure | La Réunion (974)
 ✅ Conversion automatique Excel (.xlsx, .xls) → Google Sheets  
 ✅ Support CSV, TSV, ODS  
 ✅ Conservation des fichiers originaux  
-✅ **Script interactif** qui demande l'ID du dossier Drive  
+✅ **2 modes d'authentification** : Service Account ou OAuth  
+✅ Script interactif qui demande l'ID du dossier Drive  
 ✅ Interface en ligne de commande moderne  
 ✅ Mode automatique avec `--yes`  
 ✅ Validation avant conversion  
 ✅ Rapport détaillé de conversion  
 ✅ Gestion d'erreurs complète  
+
+---
+
+## 🔐 Authentification : Service Account vs OAuth
+
+### 📊 Comparaison
+
+| Critère | Service Account | OAuth |
+|---------|----------------|-------|
+| **Usage** | Automation, serveur, cron | Usage personnel, ponctuel |
+| **Authentification** | Fichier JSON unique | Navigateur (première fois) |
+| **Partage requis** | ✅ Oui (partager Drive avec service account) | ❌ Non (accès direct à vos dossiers) |
+| **Quota Drive** | Service account (15 GB gratuit) | Votre compte personnel |
+| **Idéal pour** | Production, scripts automatiques | Tests, usage manuel |
+
+### 🤖 Service Account (recommandé pour production)
+
+**Fichier :** `convert_drive_to_sheets.py`
+
+**Avantages :**
+- ✅ Automatisable (cron, serveur)
+- ✅ Pas d'intervention humaine
+- ✅ Indépendant de votre compte personnel
+
+**Inconvénients :**
+- ⚠️ Nécessite de partager le dossier Drive
+- ⚠️ Quota limité (15 GB service account gratuit)
+
+### 👤 OAuth (recommandé pour usage personnel)
+
+**Fichier :** `convert_drive_to_sheets_oauth.py`
+
+**Avantages :**
+- ✅ Accès direct à tous vos dossiers Drive
+- ✅ Utilise votre quota personnel
+- ✅ Pas besoin de partager les dossiers
+
+**Inconvénients :**
+- ⚠️ Premier lancement : navigateur s'ouvre
+- ⚠️ Moins adapté à l'automation
 
 ---
 
@@ -45,7 +88,7 @@ python3 --version
 
 Si absent, installez-le via [python.org](https://www.python.org/downloads/)
 
-### 2. Service Account Google Cloud
+### 2a. Service Account Google Cloud (méthode automation)
 
 Créez un service account avec accès à l'API Google Drive :
 
@@ -56,21 +99,26 @@ Créez un service account avec accès à l'API Google Drive :
 5. Téléchargez le fichier JSON de credentials
 6. Renommez-le en `google-service-account.json`
 
-### 3. Partager le dossier Drive
+**Important :** Partagez ensuite vos dossiers Drive avec l'email du service account (permissions Éditeur)
 
-**Important :** Le service account doit avoir accès au dossier Drive
+### 2b. OAuth Google Cloud (méthode personnelle)
 
-1. Ouvrez votre dossier Google Drive cible
-2. Clic droit → **Partager**
-3. Ajoutez l'email du service account (trouvé dans le fichier JSON)
-4. Permissions : **Éditeur**
-5. Confirmez le partage
+Créez des credentials OAuth 2.0 :
 
-### 4. Espace de stockage suffisant
+1. Allez sur [Google Cloud Console](https://console.cloud.google.com/)
+2. Créez un projet (ou utilisez un existant)
+3. Activez l'API Google Drive
+4. Créez des **credentials OAuth 2.0** (type "Application de bureau")
+5. Téléchargez le fichier JSON
+6. Renommez-le en `credentials_oauth.json`
+
+**Avantage :** Pas besoin de partager vos dossiers, vous avez déjà accès !
+
+### 3. Espace de stockage suffisant
 
 ⚠️ **Assurez-vous d'avoir assez d'espace sur votre Google Drive**
 
-Le script crée des **copies** des fichiers au format Google Sheets. Si votre quota est dépassé, les conversions échoueront.
+Le script crée des **copies** des fichiers au format Google Sheets.
 
 **Vérifier votre espace :** https://drive.google.com/settings/storage
 
@@ -105,29 +153,26 @@ source venv/bin/activate  # macOS/Linux
 venv\Scripts\activate  # Windows
 
 # Installer les dépendances
-pip install google-auth google-api-python-client
+pip install google-auth google-auth-oauthlib google-api-python-client
 ```
 
 ---
 
 ## 🎯 Utilisation
 
-### Méthode 1 : Script de lancement interactif (recommandé)
+### Méthode 1 : Service Account (automation)
+
+#### Via le script interactif :
 
 ```bash
 bash start.sh
 ```
 
-Le script va demander :
-1. 📁 **L'ID du dossier Drive** à convertir
-2. 🤖 **Mode automatique** (oui/non)
+Le script demande :
+1. 📁 L'ID du dossier Drive
+2. 🤖 Mode automatique (oui/non)
 
-**💡 Trouver l'ID du dossier :**
-- Ouvrez votre dossier dans Google Drive
-- L'URL ressemble à : `https://drive.google.com/drive/folders/1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT`
-- L'ID est la partie après `/folders/` : `1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT`
-
-### Méthode 2 : Ligne de commande directe
+#### Via ligne de commande :
 
 ```bash
 source venv/bin/activate
@@ -143,6 +188,35 @@ python3 convert_drive_to_sheets.py FOLDER_ID --yes
 ```bash
 python3 convert_drive_to_sheets.py 1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT --yes
 ```
+
+### Méthode 2 : OAuth (usage personnel)
+
+```bash
+source venv/bin/activate
+
+# Premier lancement : navigateur s'ouvre pour authentification
+python3 convert_drive_to_sheets_oauth.py FOLDER_ID --yes
+
+# Lancements suivants : token sauvegardé, pas de navigateur
+python3 convert_drive_to_sheets_oauth.py FOLDER_ID --yes
+```
+
+**Avantage OAuth :** Pas besoin de partager le dossier Drive !
+
+---
+
+## 💡 Trouver l'ID du dossier Drive
+
+1. Ouvrez votre dossier dans Google Drive
+2. Regardez l'URL dans votre navigateur
+3. L'URL ressemble à :
+   ```
+   https://drive.google.com/drive/folders/1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT
+   ```
+4. L'ID est la partie après `/folders/` :
+   ```
+   1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT
+   ```
 
 ---
 
@@ -210,17 +284,20 @@ Contact: setheve@viceversa.re | 0692 38 00 28
 
 ```
 convert-drive-sheets/
-├── convert_drive_to_sheets.py    # Script principal
-├── install.sh                     # Installation automatique
-├── start.sh                       # Lancement interactif
-├── google-service-account.json    # Credentials (à fournir)
-├── google-service-account.json.example  # Exemple
-├── README.md                      # Ce fichier
-├── QUICKSTART.md                  # Démarrage rapide
-├── CONTACT.md                     # Coordonnées support
-├── LICENSE.txt                    # Licence
-├── .gitignore                     # Git ignore
-└── venv/                          # Environnement virtuel
+├── convert_drive_to_sheets.py         # Version Service Account
+├── convert_drive_to_sheets_oauth.py   # Version OAuth (NEW)
+├── install.sh                         # Installation automatique
+├── start.sh                           # Lancement interactif
+├── google-service-account.json        # Credentials Service Account
+├── google-service-account.json.example
+├── credentials_oauth.json             # Credentials OAuth (à créer)
+├── token.pickle                       # Token OAuth sauvegardé
+├── README.md                          # Ce fichier
+├── QUICKSTART.md                      # Démarrage rapide
+├── CONTACT.md                         # Coordonnées support
+├── LICENSE.txt                        # Licence
+├── .gitignore                         # Git ignore
+└── venv/                              # Environnement virtuel
 ```
 
 ---
@@ -253,10 +330,12 @@ git commit -m "Initial commit - Convertisseur Drive → Sheets"
 Le fichier `.gitignore` exclut automatiquement :
 - `venv/` - Environnement virtuel
 - `google-service-account.json` - Credentials (secret !)
+- `credentials_oauth.json` - Credentials OAuth
+- `token.pickle` - Token OAuth sauvegardé
 - `__pycache__/` - Fichiers Python compilés
 - `.DS_Store` - Fichiers système macOS
 
-⚠️ **Ne jamais commiter le fichier `google-service-account.json` !**
+⚠️ **Ne jamais commiter les fichiers de credentials !**
 
 ---
 
@@ -267,10 +346,10 @@ Le fichier `.gitignore` exclut automatiquement :
 **Solution :**
 ```bash
 source venv/bin/activate
-pip install google-auth google-api-python-client
+pip install google-auth google-auth-oauthlib google-api-python-client
 ```
 
-### "Permission denied" / "403 Forbidden"
+### Service Account : "Permission denied" / "403 Forbidden"
 
 **Cause :** Le service account n'a pas accès au dossier Drive
 
@@ -279,11 +358,20 @@ pip install google-auth google-api-python-client
 2. Clic droit → Partager
 3. Ajoutez l'email du service account avec permissions **Éditeur**
 
+### OAuth : Navigateur ne s'ouvre pas
+
+**Solution :**
+```bash
+# Supprimer le token et réessayer
+rm token.pickle
+python3 convert_drive_to_sheets_oauth.py FOLDER_ID
+```
+
 ### "0 éléments trouvés"
 
-**Cause :** Le service account n'a pas accès au dossier
+**Cause Service Account :** Le service account n'a pas accès au dossier
 
-**Solution :** Vérifiez que le dossier est bien partagé avec le service account
+**Cause OAuth :** Vérifiez l'ID du dossier
 
 ### "The user's Drive storage quota has been exceeded"
 
@@ -300,16 +388,7 @@ pip install google-auth google-api-python-client
    - Passer à Google One (100 GB → ~2€/mois)
    - https://one.google.com/storage
 
-3. **Alternative :** Supprimer les fichiers `.xlsx` après conversion
-
-### "Usage: python3 convert_drive_to_sheets.py FOLDER_ID"
-
-**Cause :** ID du dossier non fourni
-
-**Solution :** Utilisez `bash start.sh` ou fournissez l'ID :
-```bash
-python3 convert_drive_to_sheets.py 1aettJQjng2Vm1gOiaibinN8jP4CQZ0IT
-```
+3. **Alternative OAuth :** Utiliser la version OAuth avec votre compte personnel si vous avez plus d'espace
 
 ---
 
@@ -325,7 +404,7 @@ deactivate
 
 ```bash
 source venv/bin/activate
-pip install --upgrade google-auth google-api-python-client
+pip install --upgrade google-auth google-auth-oauthlib google-api-python-client
 ```
 
 ### Supprimer l'environnement virtuel
@@ -343,17 +422,28 @@ rm -rf venv
 python3 convert_drive_to_sheets.py TEST_FOLDER_ID
 ```
 
+### Réinitialiser OAuth
+
+```bash
+# Supprimer le token sauvegardé
+rm token.pickle
+
+# Relancer le script - navigateur s'ouvrira à nouveau
+python3 convert_drive_to_sheets_oauth.py FOLDER_ID
+```
+
 ---
 
 ## 🔒 Sécurité
 
 - ✅ Utilisez un service account dédié avec permissions limitées
-- ❌ Ne partagez **jamais** votre fichier `google-service-account.json`
-- ✅ Ajoutez `google-service-account.json` au `.gitignore`
+- ❌ Ne partagez **jamais** vos fichiers credentials
+- ✅ Ajoutez tous les fichiers credentials au `.gitignore`
 - ✅ Vérifiez les permissions du dossier Drive avant conversion
 - ✅ Testez sur un petit échantillon avant conversion massive
 - ✅ L'environnement virtuel Python isole les dépendances
 - ✅ Le fichier `.gitignore` protège vos credentials
+- ✅ OAuth : Le token est sauvegardé localement et protégé
 
 ---
 
@@ -384,6 +474,16 @@ Pour toute question, assistance ou développement personnalisé :
 © 2026 Samuel ETHEVE - Tous droits réservés
 
 Script développé par **Viceversa** - Solutions Digitales sur-mesure
+
+---
+
+## 🎓 Projets & Références
+
+- **entrepreneur.re** — Média automatisé IA
+- **actus.re** — Agrégateur d'actualités automatisé
+- **lequotidien.re** — Le Quotidien de La Réunion
+- **promotions.re** — Catalogues promotionnels entreprises
+- **salonformation.re** — Gestion salon formation
 
 ---
 

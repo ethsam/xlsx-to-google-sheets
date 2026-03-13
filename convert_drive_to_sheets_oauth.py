@@ -53,21 +53,15 @@ TOKEN_FILE = os.path.join(SCRIPT_DIR, 'token.pickle')
 # FONCTIONS
 # ============================================================================
 
-def get_drive_service():
-    """Authentification OAuth et service Drive"""
-    creds = None
-    
-    # Charger le token s'il existe
-    if os.path.exists(TOKEN_FILE):
-        with open(TOKEN_FILE, 'rb') as token:
-            creds = pickle.load(token)
-    
-    # Si pas de credentials valides, demander l'authentification
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            print("🔄 Rafraîchissement du token...")
-            creds.refresh(Request())
-        else:
+            # Charger les credentials OAuth depuis le fichier
+            creds_file = os.path.join(SCRIPT_DIR, "credentials_oauth.json")
+            if not os.path.exists(creds_file):
+                print("❌ Fichier credentials_oauth.json manquant")
+                print("   Créez vos credentials OAuth sur Google Cloud Console")
+                print("   Documentation: README.md section OAuth")
+                sys.exit(1)
+            
+            flow = InstalledAppFlow.from_client_secrets_file(creds_file, SCOPES)
             print("🔐 Première utilisation - Authentification requise")
             print("   Un navigateur va s'ouvrir pour vous connecter")
             print("")
