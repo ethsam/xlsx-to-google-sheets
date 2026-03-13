@@ -1,67 +1,68 @@
 #!/bin/bash
 ################################################################################
-# Script de lancement - Convertisseur Drive → Google Sheets
+# Interactive Launcher / Lanceur interactif
+# Drive to Sheets Converter / Convertisseur Drive vers Sheets
 #
-# Auteur: Samuel ETHEVE
+# Author / Auteur: Samuel ETHEVE
 # Email: setheve@viceversa.re
-# Tél: 0692 38 00 28
 ################################################################################
 
 echo "================================================================================"
-echo "CONVERTISSEUR DRIVE → GOOGLE SHEETS"
-echo "Par Samuel ETHEVE | setheve@viceversa.re | 0692 38 00 28"
+echo "DRIVE → GOOGLE SHEETS CONVERTER / CONVERTISSEUR"
+echo "By / Par Samuel ETHEVE | setheve@viceversa.re"
 echo "================================================================================"
 echo ""
 
-# Vérifier que l'environnement virtuel existe
+# Check virtual environment / Verifier l'environnement virtuel
 if [ ! -d "venv" ]; then
-    echo "⚠️  Environnement virtuel non trouvé"
-    echo "   Lancer d'abord: bash install.sh"
+    echo "Virtual environment not found / Environnement virtuel non trouve"
+    echo "   Run first / Lancez d'abord: bash install.sh"
     exit 1
 fi
 
-# Vérifier le fichier credentials
+# Check credentials / Verifier les credentials
 if [ ! -f "google-service-account.json" ]; then
-    echo "❌ Fichier google-service-account.json manquant"
+    echo "File missing / Fichier manquant: google-service-account.json"
+    echo "   Place this file in the project folder before continuing"
     echo "   Placez ce fichier dans le dossier avant de continuer"
     exit 1
 fi
 
-# Demander l'ID du dossier Drive
-echo "📁 ID du dossier Google Drive à convertir"
+# Ask for Drive folder ID / Demander l'ID du dossier Drive
+echo "Google Drive folder ID to convert / ID du dossier Google Drive a convertir"
 echo ""
-echo "💡 Pour trouver l'ID :"
-echo "   1. Ouvrez votre dossier dans Google Drive"
-echo "   2. L'URL ressemble à: https://drive.google.com/drive/folders/ID_ICI"
-echo "   3. Copiez la partie après /folders/"
+echo "How to find the ID / Comment trouver l'ID :"
+echo "   1. Open your folder in Google Drive / Ouvrez votre dossier dans Google Drive"
+echo "   2. URL looks like / L'URL ressemble a: https://drive.google.com/drive/folders/ID_HERE"
+echo "   3. Copy the part after /folders/ / Copiez la partie apres /folders/"
 echo ""
-read -p "🔑 Entrez l'ID du dossier: " FOLDER_ID
+read -p "Enter folder ID / Entrez l'ID du dossier: " FOLDER_ID
 
-# Vérifier que l'ID n'est pas vide
+# Check ID is not empty / Verifier que l'ID n'est pas vide
 if [ -z "$FOLDER_ID" ]; then
-    echo "❌ ID du dossier requis"
+    echo "Folder ID required / ID du dossier requis"
     exit 1
 fi
 
 echo ""
-echo "📊 ID du dossier: $FOLDER_ID"
+echo "Folder ID / ID du dossier: $FOLDER_ID"
 echo ""
 
-# Demander le mode (interactif ou auto)
-read -p "🤖 Mode automatique (pas de confirmation) ? (o/n): " AUTO_MODE
+# Ask for mode / Demander le mode
+read -p "Automatic mode / Mode automatique (no confirmation) ? (y/o/n): " AUTO_MODE
 
-# Activer l'environnement virtuel
+# Activate virtual environment / Activer l'environnement virtuel
 source venv/bin/activate
 
-# Lancer le script avec l'ID
-if [ "$AUTO_MODE" = "o" ] || [ "$AUTO_MODE" = "oui" ]; then
+# Run script / Lancer le script
+if [ "$AUTO_MODE" = "o" ] || [ "$AUTO_MODE" = "oui" ] || [ "$AUTO_MODE" = "y" ] || [ "$AUTO_MODE" = "yes" ]; then
     echo ""
-    echo "🚀 Lancement en mode automatique..."
+    echo "Starting in automatic mode / Lancement en mode automatique..."
     echo ""
     python3 convert_drive_to_sheets.py "$FOLDER_ID" --yes
 else
     echo ""
-    echo "🚀 Lancement en mode interactif..."
+    echo "Starting in interactive mode / Lancement en mode interactif..."
     echo ""
     python3 convert_drive_to_sheets.py "$FOLDER_ID"
 fi

@@ -1,33 +1,42 @@
-# 📝 Historique des versions
+# Changelog
 
-## Version 1.0 (Mars 2026)
+All notable changes to this project will be documented in this file.
 
-### ✨ Fonctionnalités initiales
+## [1.1.0] - 2026-03-13
 
-- ✅ Exploration récursive des dossiers Google Drive
-- ✅ Conversion automatique Excel (.xlsx, .xls) → Google Sheets
-- ✅ Support des formats CSV, TSV, ODS
-- ✅ Conservation des fichiers originaux
-- ✅ Interface en ligne de commande interactive
-- ✅ Validation avant conversion
-- ✅ Rapport détaillé de conversion
-- ✅ Gestion d'erreurs complète
-- ✅ Documentation professionnelle
+### Added
 
-### 🔧 Technique
+- Bilingual documentation (English + French)
+- `README.md` in English for international audience
+- `README.fr.md` in French with cross-links
+- `requirements.txt` with pinned minimum versions
+- MIT License for open-source distribution
+- Contributing guidelines
+- Architecture diagram in documentation
+- Authentication comparison table
 
-- Python 3.x
-- Google Drive API v3
-- Service Account authentication
-- Pagination automatique pour gros volumes
-- Retry automatique sur erreurs HTTP
+### Changed
 
----
+- Project restructured for open-source GitHub distribution
+- Documentation rewritten with badges, tables, and diagrams
 
-## Développeur
+### Removed
 
-**Samuel ETHEVE**  
-setheve@viceversa.re | 0692 38 00 28  
-www.viceversa.re
+- Client-specific documentation files (CONTACT.md, INFO.md, QUICKSTART.md, etc.)
+- Proprietary license replaced by MIT
 
-Pour toute demande d'évolution ou support, n'hésitez pas à me contacter.
+## [1.0.0] - 2026-03-01
+
+### Added
+
+- Recursive Google Drive folder exploration
+- Automatic conversion: Excel (.xlsx, .xls), CSV, TSV, ODS to Google Sheets
+- Service Account authentication (`convert_drive_to_sheets.py`)
+- OAuth 2.0 authentication (`convert_drive_to_sheets_oauth.py`)
+- Interactive launcher (`start.sh`)
+- Automated installer (`install.sh`)
+- Original files preserved (non-destructive)
+- Interactive and batch mode (`--yes` flag)
+- Automatic pagination for large folders
+- Detailed conversion report (success/error counts)
+- `.gitignore` protecting credential files
